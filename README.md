@@ -1,41 +1,57 @@
-# AI Mock Interview Coach
+# AI Interview Coach
 
-A two-part project with a React frontend and a FastAPI backend for generating interview questions, evaluating answers, and tracking practice sessions.
+AI-powered mock interview application with a React frontend and a FastAPI backend.
 
-## Project structure
+## Project Structure
 
-- `frontend/` — React + Vite app
-- `backend/` — FastAPI server with Claude/Anthropic integration and SQLite persistence
+- `frontend/` - Vite + React + Tailwind UI
+- `backend/` - FastAPI API with Anthropic integration and SQLite persistence
 
-## Setup
-
-### Frontend
+## Backend Setup
 
 ```bash
-cd "c:\Users\ashut\OneDrive\Documents\AI MOCK INTERVIEWER\ai-interview-coach\frontend"
+cd backend
+pip install -r requirements.txt
+```
+
+Create `backend/.env` from `backend/.env.example` and set your key:
+
+```env
+ANTHROPIC_API_KEY=your_anthropic_api_key_here
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
+ALLOWED_ORIGINS=http://localhost:5173
+```
+
+Run backend:
+
+```bash
+uvicorn main:app --reload
+```
+
+## Frontend Setup
+
+```bash
+cd frontend
 npm install
 npm run dev
 ```
 
-### Backend
+Optional frontend env (`frontend/.env`):
 
-```bash
-cd "c:\Users\ashut\OneDrive\Documents\AI MOCK INTERVIEWER\ai-interview-coach\backend"
-pip install -r requirements.txt
-cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
-uvicorn main:app --reload
+```env
+VITE_API_BASE_URL=http://localhost:8000
 ```
 
 ## API Endpoints
 
-- `POST /get-question`
-- `POST /evaluate`
-- `POST /save-session`
-- `GET /history/{name}`
+- `GET /` - health check
+- `POST /get-question` - generate a role-specific interview question
+- `POST /evaluate` - evaluate a candidate answer and return scores/feedback
+- `POST /save-session` - persist completed session
+- `GET /history/{name}` - list previous sessions by candidate name
 
 ## Notes
 
-- The frontend is configured to call `http://localhost:8000`
-- You can customize the Tailwind setup in `frontend/vite.config.js`
-- Use `.env.example` as a template for your actual API key
+- Session data is stored in `backend/interviews.db`.
+- Voice input uses browser speech recognition APIs.
+- If Anthropic is unavailable, the backend automatically falls back to deterministic local prompts and scoring.

@@ -1,4 +1,4 @@
-import { LoaderCircle, Mic, MicOff, SendHorizonal, StopCircle } from 'lucide-react'
+import { LoaderCircle, Mic, MicOff, SendHorizontal, StopCircle } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { API_BASE_URL } from '../lib/config'
@@ -186,7 +186,7 @@ export default function InterviewRoom({
               </>
             ) : (
               <>
-                <SendHorizonal className="h-4 w-4" />
+                <SendHorizontal className="h-4 w-4" />
                 Submit Answer
               </>
             )}
