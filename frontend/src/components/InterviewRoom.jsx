@@ -216,12 +216,8 @@ export default function InterviewRoom({
         </div>
 
         {/* Interviewer Avatar */}
-        <div className={`interviewer-avatar ${isSpeaking ? 'speaking' : ''}`}>
-          <img 
-            src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=100&amp;q=80&amp;crop=face" 
-            alt="AI Interviewer" 
-            className="avatar-image"
-          />
+<div className={`interviewer-avatar ${isSpeaking ? 'speaking' : ''}`}>
+          <div className="avatar-emoji">🤖</div>
           <div className="mouth-overlay" />
         </div>
 
