@@ -1,4 +1,4 @@
-import { LoaderCircle, Mic, MicOff, SendHorizontal, StopCircle, AlertCircle } from 'lucide-react'
+import { LoaderCircle, Mic, MicOff, SendHorizontal, StopCircle, AlertCircle, Volume2 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { API_BASE_URL } from '../lib/config'
@@ -20,6 +20,7 @@ export default function InterviewRoom({
   const [listening, setListening] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [answerWarning, setAnswerWarning] = useState('')
+  const [isSpeaking, setIsSpeaking] = useState(false)
 
   const recognitionRef = useRef(null)
   const questionNumber = sessionData.questions.length + 1
@@ -55,6 +56,7 @@ export default function InterviewRoom({
         throw new Error('Empty question received')
       }
       setQuestion(newQuestion)
+      speakQuestion(newQuestion)
     } catch (error) {
       console.error(error)
       setQuestion('')
@@ -62,6 +64,31 @@ export default function InterviewRoom({
     } finally {
       setLoading(false)
     }
+  }
+
+  function speakQuestion(text) {
+    if (!text.trim()) return
+
+    // Check browser support
+    if (!window.speechSynthesis) {
+      console.warn('Speech Synthesis not supported')
+      return
+    }
+
+    // Stop any ongoing speech
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'en-US'
+    utterance.rate = 0.95
+    utterance.pitch = 1.0
+    utterance.volume = 1.0
+
+    utterance.onstart = () => setIsSpeaking(true)
+    utterance.onend = () => setIsSpeaking(false)
+    utterance.onerror = () => setIsSpeaking(false)
+
+    window.speechSynthesis.speak(utterance)
   }
 
   function validateAnswer() {
@@ -188,6 +215,12 @@ export default function InterviewRoom({
           </div>
         </div>
 
+        {/* Interviewer Avatar */}
+<div className={`interviewer-avatar ${isSpeaking ? 'speaking' : ''}`}>
+          <div className="avatar-emoji">🤖</div>
+          <div className="mouth-overlay" />
+        </div>
+
         <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-5">
           {loading && (
             <p className="inline-flex items-center gap-2 text-sm text-slate-300">
@@ -249,8 +282,19 @@ export default function InterviewRoom({
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             type="button"
+            onClick={() => speakQuestion(question)}
+            disabled={loading || !question || isSpeaking}
+            className="btn-ghost disabled:opacity-45 disabled:cursor-not-allowed"
+            title="Re-speak question"
+          >
+            <Volume2 className={`h-4 w-4 ${isSpeaking ? 'animate-pulse' : ''}`} />
+            {isSpeaking ? 'Speaking...' : '🔊 Re-speak'}
+          </button>
+
+          <button
+            type="button"
             onClick={toggleVoice}
-            disabled={submitting || loading}
+            disabled={submitting || loading || isSpeaking}
             className="btn-ghost disabled:opacity-45 disabled:cursor-not-allowed"
             title={listening ? 'Stop recording' : 'Start recording'}
           >
